@@ -1,16 +1,18 @@
 #include "wifi_control.h"
 #include <SoftwareSerial.h>
 #include <Arduino.h>
+#include "sensors.h"
+#include "wheels.h"
 
-SoftwareSerial wifiSerial(15, 14); // RX, TX
+//SoftwareSerial wifiSerial(1, 0);
+#define wifiSerial    Serial1
 
-static bool destination_set = false;
-static double dest_lat = 0.0, dest_lon = 0.0;
 
-// --- Вспомогательные функции для AT-команд ---
+static bool save_requested = false;
+
 void send_at_command(const char* cmd, unsigned long timeout) {
-  wifiSerial.println(cmd);
-  delay(100); // дадим время на обработку
+  wifiSerial.write(cmd);
+  delay(100);
 }
 
 bool wait_for_response(const char* expected, unsigned long timeout) {
@@ -29,87 +31,72 @@ bool wait_for_response(const char* expected, unsigned long timeout) {
   return false;
 }
 
-// --- Инициализация ---
 void wifi_init() {
   wifiSerial.begin(115200);
   delay(1000);
-
-  send_at_command("AT", 2000);
+  send_at_command("AT\r\n", 2000);
   if (!wait_for_response("OK")) {
     Serial.println("ESP8266 not responding to AT command");
     return;
   }
-
-  // Установка режима клиента
-  send_at_command("AT+CWMODE=1", 2000);
+  send_at_command("AT+CWMODE=1\r\n", 2000);
   if (!wait_for_response("OK")) {
     Serial.println("Failed to set station mode");
     return;
   }
-
-  // Подключение к Wi-Fi
-  send_at_command("AT+CWJAP=\"YunKage\",\"2()()618()7\"", 10000);
+  send_at_command("AT+CWJAP=\"Archer\",\"12141250\"\r\n", 9000);
   if (!wait_for_response("OK")) {
     Serial.println("Failed to connect to WiFi");
     return;
   }
-
-  Serial.println("WiFi connected via ESP8266");
+  // Запуск TCP-сервера
+  send_at_command("AT+CIPMUX=1\r\n", 2000);
+  send_at_command("AT+CIPSERVER=1,8080\r\n", 3000);
+  send_at_command("AT+CIFSR\r\n", 4000);
+  Serial.flush();
+  wifiSerial.flush();
+  for (short int i = 0; i < wifiSerial.available(); ++i){
+      char c = wifiSerial.read();
+      Serial.print(c);
+  }
+  //Serial.println("WiFi connected via ESP8266");
 }
 
-// --- Обработка команд от Wi-Fi ---
 void wifi_handle_incoming_commands() {
   if (wifiSerial.available()) {
     String cmd = wifiSerial.readStringUntil('\n');
     cmd.trim();
-
     if (cmd.startsWith("CMD:")) {
       char motor_cmd = cmd.charAt(4);
       Serial.print("Received motor command via WiFi: ");
       Serial.println(motor_cmd);
-      // Передаём команду в модуль управления моторами
-      // handle_motor_command(motor_cmd); // Вызываем функцию из motors.cpp
+      handle_wheel_command(motor_cmd);
     }
-    else if (cmd.startsWith("SET_DEST:")) {
-      int sep = cmd.indexOf(',');
-      if (sep > 0) {
-        dest_lat = cmd.substring(9, sep).toDouble();
-        dest_lon = cmd.substring(sep + 1).toDouble();
-        destination_set = true;
-        Serial.println("Destination set via WiFi.");
-      }
+    else if (cmd == "SAVE_NOW"){
+        save_requested=true;
+        Serial.println("Save requested via WiFi");
     }
   }
 }
 
-// --- Отправка данных ---
-void wifi_send_data(double sensors_data[3], double gps_lat, double gps_lon, float gps_speed, float gps_alt) {
+void wifi_send_data(double sensors_data[3]) {
+  float dist = read_ultrasonic_cm();
   String data = "DATA:";
-  data += gps_lat, 6;
+  data += String(sensors_data[0], 2);
   data += ",";
-  data += gps_lon, 6;
+  data += String(sensors_data[1], 2);
   data += ",";
-  data += gps_speed;
+  data += String(sensors_data[2], 2);
   data += ",";
-  data += gps_alt;
-  data += ",";
-  data += sensors_data[0];
-  data += ",";
-  data += sensors_data[1];
-  data += ",";
-  data += sensors_data[2];
+  data += String(dist, 1);
   data += "\n";
   wifiSerial.print(data);
 }
 
-bool wifi_has_destination() {
-  return destination_set;
+bool wifi_should_save_now(){
+    return save_requested;
 }
 
-void wifi_request_destination(double* lat, double* lon) {
-  if (destination_set) {
-    *lat = dest_lat;
-    *lon = dest_lon;
-    destination_set = false;
-  }
+void wifi_clear_save_flag(){
+    save_requested = false;
 }
