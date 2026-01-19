@@ -153,7 +153,7 @@ void handle_wheel_command(char data){
     Serial.print("Handling command: '");
     Serial.print(data);
     Serial.println("'");
-  if ((data == '0') or (data == 'o') or (data == 'M') or (data == 'N')){w_off();}
+  if (data == '0'){w_off();}
   else if (data == 'F'){move_f();}
   else if (data == 'B'){move_b();}
   else if (data == '6'){rotation_r();}
