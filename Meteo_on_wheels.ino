@@ -19,7 +19,7 @@ void setup() {
   pinMode(STATE_PIN, INPUT);
 
   wheels_init(Ena);
-  sensors_init();
+  //sensors_init();
   //gps_sd_init();
   wifi_init();
 }
@@ -27,11 +27,11 @@ void setup() {
 void loop() {
   static double sensors_data[3];
 
-  sensors_read(sensors_data);
-  wifi_send_data(sensors_data);
+  //sensors_read(sensors_data);
+  //wifi_send_data(sensors_data);
 
-  if (Serial.available()) Serial1.write(Serial.read());
-  if (Serial1.available()) Serial.write(Serial1.read());
+  //if (Serial.available()) Serial1.write(Serial.read());
+  //if (Serial1.available()) Serial.write(Serial1.read());
   
   wifi_handle_incoming_commands();
   //gps_sd_update(sensors_data);
