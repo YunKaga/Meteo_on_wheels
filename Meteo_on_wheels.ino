@@ -20,23 +20,20 @@ void setup() {
 
   wheels_init(Ena);
   sensors_init();
-  gps_sd_init();
+  //gps_sd_init();
   wifi_init();
 }
 
 void loop() {
   static double sensors_data[3];
 
-  //printResponse();
+  sensors_read(sensors_data);
+  wifi_send_data(sensors_data);
 
-  //sensors_read(sensors_data);
-  //wifi_send_data(sensors_data);
-
-if (digitalRead(STATE_PIN)) {
-  digitalWrite(LED_BUILTIN, HIGH);
-
+  if (Serial.available()) Serial1.write(Serial.read());
+  if (Serial1.available()) Serial.write(Serial1.read());
+  
   wifi_handle_incoming_commands();
-
-}
-  gps_sd_update(sensors_data);
+  //gps_sd_update(sensors_data);
+  delay(100);
 }
