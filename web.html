@@ -14,7 +14,7 @@
                 <button onmousedown="send('CMD:3')" onmouseup="send('CMD:0')">⬈ T</button>
                 <br>
                 <button onmousedown="send('CMD:L')" onmouseup="send('CMD:0')">⬅︎ A</button>
-                <button onmousedown="send('CMD:S')" onmouseup="send('CMD:0')">⬇︎ S</button>
+                <button onmousedown="send('CMD:B')" onmouseup="send('CMD:0')">⬇︎ S</button>
                 <button onmousedown="send('CMD:R')" onmouseup="send('CMD:0')">➡︎ D</button>
                 <button disabled style="visibility: hidden;"></button>
                 <button onmousedown="send('CMD:2')" onmouseup="send('CMD:0')">⬋ F</button>
@@ -33,7 +33,7 @@
                   else if (event.key == 'r') {send('CMD:1'); KeyPressed = true;}
                   else if (event.key == 't') {send('CMD:3'); KeyPressed = true;}
                   else if (event.key == 'a') {send('CMD:L'); KeyPressed = true;}
-                  else if (event.key == 's') {send('CMD:S'); KeyPressed = true;}
+                  else if (event.key == 's') {send('CMD:B'); KeyPressed = true;}
                   else if (event.key == 'd') {send('CMD:R'); KeyPressed = true;}
                   else if (event.key == 'f') {send('CMD:2'); KeyPressed = true;}
                   else if (event.key == 'g') {send('CMD:4'); KeyPressed = true;}

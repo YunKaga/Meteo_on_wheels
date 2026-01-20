@@ -47,7 +47,7 @@ void wifi_init() {
         Serial.println("Failed to set station mode");
         return;
     }
-    send_at_command("AT+CWJAP=\"Archer\",\"12141250\"\r\n", 9000);
+    send_at_command("AT+CWJAP=\"KATANA_17 4207\",\"35u979B&\"\r\n", 9000);
     if (!wait_for_response("OK")) {
         Serial.println("Failed to connect to WiFi");
         return;
