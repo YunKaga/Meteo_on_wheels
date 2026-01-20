@@ -2,7 +2,12 @@
             <style>button { width: 80px; height: 80px; font-size: 20px; margin: 5px; margin-bottom: 0px; margin-top: 0px;}</style>
             </head><body>
               <h2>Данные с датчиков:</h2>
-              <pre id="data">{latest_data}</pre>
+              <div>
+                <p>Давление: <span id="pressure">--</span> Pa</p>
+                <p>Влажность: <span id="humidity">--</span> %</p>
+                <p>Температура: <span id="temperature">--</span> °C</p>
+                <p>Расстояние: <span id="distance">--</span> cm</p>
+              </div>
               <p>Обновлено: <span id="time">--</span></p>
 
               <div style="margin: 20px; margin-bottom: 60px;">
@@ -47,7 +52,10 @@
                 }
                 function update() {
                   fetch('/data').then(r => r.text()).then(t => {
-                    document.getElementById('data').innerText = t;
+                    document.getElementById('pressure').innerText = t.substring(0, t.indexOf(',')); t = t.substring(t.indexOf(',') + 1);
+                    document.getElementById('humidity').innerText = t.substring(0, t.indexOf(',')); t = t.substring(t.indexOf(',') + 1);
+                    document.getElementById('temperature').innerText = t.substring(0, t.indexOf(',')); t = t.substring(t.indexOf(',') + 1);
+                    document.getElementById('distance').innerText = t;
                     document.getElementById('time').innerText = new Date().toLocaleTimeString();
                   });
                 }

@@ -97,8 +97,8 @@ void wifi_send_data(double sensors_data[3]) {
     data += String(sensors_data[1], 2);
     data += ",";
     data += String(sensors_data[2], 2);
-    //data += ",";
-    //data += String(dist, 1);
+    data += ",";
+    data += String(sensors_data[3], 0);
     data += "\n";
 
     String cmd = "AT+CIPSEND=0," + String(data.length()) + "\r\n";

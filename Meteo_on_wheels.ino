@@ -25,10 +25,10 @@ void setup() {
 }
 
 void loop() {
-  static double sensors_data[3];
+  static double sensors_data[4];
 
-  //sensors_read(sensors_data);
-  //wifi_send_data(sensors_data);
+  sensors_read(sensors_data);
+  wifi_send_data(sensors_data);
 
   //if (Serial.available()) Serial1.write(Serial.read());
   //if (Serial1.available()) Serial.write(Serial1.read());
