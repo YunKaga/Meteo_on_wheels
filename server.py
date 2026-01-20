@@ -34,7 +34,7 @@ def esp_listener():
                             print("ESP:", line)
         except Exception as e:
             print("Ошибка подключения к ESP:", e)
-            time.sleep(3)
+            time.sleep(1)
 
 def send_to_esp(cmd):
     try:
@@ -51,37 +51,7 @@ class WebHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/html; charset=utf-8")
             self.end_headers()
-            html = f'''
-            <html><head><meta charset="utf-8"><title>Meteo Wheels</title>
-            <style>button {{ width: 80px; height: 80px; font-size: 20px; margin: 5px; }}</style>
-            </head><body>
-              <h2>Данные с датчиков:</h2>
-              <pre id="data">{latest_data}</pre>
-              <p>Обновлено: <span id="time">--</span></p>
-
-              <div style="margin: 20px;">
-                <button onclick="send('CMD:F')">↑ W</button><br>
-                <button onclick="send('CMD:L')">← A</button>
-                <button onclick="send('CMD:S')">↓ S</button>
-                <button onclick="send('CMD:R')">→ D</button>
-              </div>
-              <button onclick="send('SAVE_NOW')" style="font-size:18px;">💾 Сохранить сейчас</button>
-
-              <script>
-                function send(cmd) {{
-                  fetch('/cmd?c=' + encodeURIComponent(cmd));
-                }}
-                function update() {{
-                  fetch('/data').then(r => r.text()).then(t => {{
-                    document.getElementById('data').innerText = t;
-                    document.getElementById('time').innerText = new Date().toLocaleTimeString();
-                  }});
-                }}
-                setInterval(update, 1000);
-                update();
-              </script>
-            </body></html>
-            '''
+            html = open("web.html", 'r', encoding="UTF-8").read()
             self.wfile.write(html.encode())
         elif self.path.startswith('/cmd'):
             cmd = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query).get('c', [''])[0]
