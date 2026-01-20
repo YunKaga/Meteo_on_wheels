@@ -19,7 +19,7 @@ void setup() {
   pinMode(STATE_PIN, INPUT);
 
   wheels_init(Ena);
-  //sensors_init();
+  sensors_init();
   //gps_sd_init();
   wifi_init();
 }

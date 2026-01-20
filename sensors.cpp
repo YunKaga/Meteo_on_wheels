@@ -27,7 +27,3 @@ void sensors_read(double data[]){
   data[2] = dht22.getTemperature();
   data[3] = sonar.ping_cm();
 }
-
-float read_ultrasonic_cm() {
-  return sonar.ping_cm();
-}
