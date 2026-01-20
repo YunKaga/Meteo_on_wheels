@@ -23,16 +23,15 @@ void gps_sd_init() {
   }
 }
 
-void gps_sd_update(double sensors_data[3]) {
+void gps_sd_update(double sensors_data[4]) {
     static unsigned long last_save = 0;
-      float dist = read_ultrasonic_cm();
       file.print(sensors_data[0]);
       file.print(",");
       file.print(sensors_data[1]);
       file.print(",");
       file.print(sensors_data[2]);
       file.print(",");
-      file.println(dist);
+      file.println(sensors_data[3]);
       file.flush();
 }
 

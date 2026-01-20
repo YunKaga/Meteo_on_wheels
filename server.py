@@ -5,10 +5,10 @@ import time
 import urllib.parse
 
 # === НАСТРОЙТЕ ЭТО ===
-ESP_IP = "192.168.137.8"  # ← ЗАМЕНИТЕ на IP вашего ESP8266
+ESP_IP = "192.168.137.183"  # ← ЗАМЕНИТЕ на IP вашего ESP8266
 ESP_PORT = 8080
 
-latest_data = "Ожидание..."
+latest_data = ""
 last_update = 0
 
 def esp_listener():

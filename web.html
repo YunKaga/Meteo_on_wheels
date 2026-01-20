@@ -11,6 +11,9 @@
               <p>Обновлено: <span id="time">--</span></p>
 
               <div style="margin: 20px; margin-bottom: 60px;">
+                <p style="font-size: 20px;">Скорость:
+                  <input type="range" id="speed" min="100" max="250" step="10" value="150" style="width: 250px; margin-left: 20px; margin-right: 20px; accent-color: chartreuse;"/>
+                <span id="speed_value">150</span> \ 250</p>
                 <button onmousedown="send('CMD:5')" onmouseup="send('CMD:0')">⟲ Q</button>
                 <button onmousedown="send('CMD:F')" onmouseup="send('CMD:0')">⬆︎ W</button>
                 <button onmousedown="send('CMD:6')" onmouseup="send('CMD:0')">⟳ E</button>
@@ -46,6 +49,13 @@
                 document.body.onkeyup = function keyup(event){
                   if (KeyPressed) {send('CMD:0'); KeyPressed = false;}                  
                 }
+
+                document.getElementById('speed').addEventListener('input', function(event) {
+                  document.getElementById("speed_value").innerText = this.value;
+                });
+                document.getElementById('speed').addEventListener('change', function(event) {
+                  send('CMD:S' + this.value);
+                });
 
                 function send(cmd) {
                   fetch('/cmd?c=' + encodeURIComponent(cmd));

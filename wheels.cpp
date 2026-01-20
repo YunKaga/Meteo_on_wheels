@@ -165,3 +165,7 @@ void handle_wheel_command(char data){
   else if (data == '4'){move_br();}
   else if (data == '2'){move_bl();}
 }
+
+void speed_change(int value){
+  analogWrite(ena_pin, value);
+}

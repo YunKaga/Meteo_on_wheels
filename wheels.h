@@ -14,5 +14,6 @@ void move_fl();
 void move_br();
 void move_bl();
 void handle_wheel_command(char data);
+void speed_change(int value);
 
 #endif

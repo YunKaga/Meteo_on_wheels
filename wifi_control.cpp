@@ -74,8 +74,14 @@ void wifi_handle_incoming_commands() {
 
         if (dataPart.startsWith("CMD:")) {
           char cmd = dataPart.charAt(4);
-          Serial.println("→ Command: " + String(cmd));
-          handle_wheel_command(cmd);
+          if (cmd == 'S'){
+            Serial.println("→ Command: " + dataPart.substring(4));
+            speed_change(dataPart.substring(5).toInt());
+          }
+          else {
+            Serial.println("→ Command: " + String(cmd));
+            handle_wheel_command(cmd);
+          }
         } else if (dataPart == "SAVE_NOW") {
           save_requested = true;
           Serial.println("→ Save requested");
@@ -90,7 +96,6 @@ void wifi_handle_incoming_commands() {
 }
 
 void wifi_send_data(double sensors_data[3]) {
-    //float dist = read_ultrasonic_cm();
     String data = "DATA:";
     data += String(sensors_data[0], 2);
     data += ",";
