@@ -1,0 +1,57 @@
+<html><head><meta charset="utf-8"><title>Meteo Wheels</title>
+            <style>button { width: 80px; height: 80px; font-size: 20px; margin: 5px; margin-bottom: 0px; margin-top: 0px;}</style>
+            </head><body>
+              <h2>Данные с датчиков:</h2>
+              <pre id="data">{latest_data}</pre>
+              <p>Обновлено: <span id="time">--</span></p>
+
+              <div style="margin: 20px; margin-bottom: 60px;">
+                <button onmousedown="send('CMD:5')" onmouseup="send('CMD:0')">⟲ Q</button>
+                <button onmousedown="send('CMD:F')" onmouseup="send('CMD:0')">⬆︎ W</button>
+                <button onmousedown="send('CMD:6')" onmouseup="send('CMD:0')">⟳ E</button>
+                <button disabled style="visibility: hidden;"></button>
+                <button onmousedown="send('CMD:1')" onmouseup="send('CMD:0')">⬉ R</button>
+                <button onmousedown="send('CMD:3')" onmouseup="send('CMD:0')">⬈ T</button>
+                <br>
+                <button onmousedown="send('CMD:L')" onmouseup="send('CMD:0')">⬅︎ A</button>
+                <button onmousedown="send('CMD:S')" onmouseup="send('CMD:0')">⬇︎ S</button>
+                <button onmousedown="send('CMD:R')" onmouseup="send('CMD:0')">➡︎ D</button>
+                <button disabled style="visibility: hidden;"></button>
+                <button onmousedown="send('CMD:2')" onmouseup="send('CMD:0')">⬋ F</button>
+                <button onmousedown="send('CMD:4')" onmouseup="send('CMD:0')">⬊ G</button>
+                
+              </div>
+              <button onclick="send('SAVE_NOW')" style="font-size:18px; width: 240px;">💾 Сохранить сейчас</button>
+
+              <script>
+                let KeyPressed = false;
+                document.body.onkeydown = function keydown(event){
+                  if (KeyPressed) return;
+                  if (event.key == 'q') {send('CMD:5'); KeyPressed = true;}
+                  else if (event.key == 'w') {send('CMD:F'); KeyPressed = true;}
+                  else if (event.key == 'e') {send('CMD:6'); KeyPressed = true;}
+                  else if (event.key == 'r') {send('CMD:1'); KeyPressed = true;}
+                  else if (event.key == 't') {send('CMD:3'); KeyPressed = true;}
+                  else if (event.key == 'a') {send('CMD:L'); KeyPressed = true;}
+                  else if (event.key == 's') {send('CMD:S'); KeyPressed = true;}
+                  else if (event.key == 'd') {send('CMD:R'); KeyPressed = true;}
+                  else if (event.key == 'f') {send('CMD:2'); KeyPressed = true;}
+                  else if (event.key == 'g') {send('CMD:4'); KeyPressed = true;}
+                }
+                document.body.onkeyup = function keyup(event){
+                  if (KeyPressed) {send('CMD:0'); KeyPressed = false;}                  
+                }
+
+                function send(cmd) {
+                  fetch('/cmd?c=' + encodeURIComponent(cmd));
+                }
+                function update() {
+                  fetch('/data').then(r => r.text()).then(t => {
+                    document.getElementById('data').innerText = t;
+                    document.getElementById('time').innerText = new Date().toLocaleTimeString();
+                  });
+                }
+                setInterval(update, 1000);
+                update();
+              </script>
+            </body></html>
