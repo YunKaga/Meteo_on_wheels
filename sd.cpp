@@ -1,13 +1,13 @@
-#include "gps_sd.h"
+#include "sd.h"
 #include "sensors.h"
 #include <Arduino.h>
 #include <SD.h>
 
 File file;
 const byte CS_PIN = 29;
-const char* FILE_NAME = "sensors_data.csv";
+const char* FILE_NAME = "data.csv";
 
-void gps_sd_init() {
+void sd_init() {
   if (!SD.begin(CS_PIN)) {
     Serial.println("SD init failed");
   }
@@ -23,7 +23,7 @@ void gps_sd_init() {
   }
 }
 
-void gps_sd_update(double sensors_data[4]) {
+void sd_update(double sensors_data[4]) {
     static unsigned long last_save = 0;
       file.print(sensors_data[0]);
       file.print(",");
@@ -35,7 +35,7 @@ void gps_sd_update(double sensors_data[4]) {
       file.flush();
 }
 
-void gps_sd_save_now(double sensors_data[3]) {
+void sd_save_now(double sensors_data[3]) {
  
     if (file){
     float dist = 0.0;
