@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include "wheels.h"
 
+char current_active_cmd = '0';
+unsigned long motion_start_time = 0;
+
 const byte BR0 = 2;
 const byte BR1 = 3;
 const byte BL0 = 4;

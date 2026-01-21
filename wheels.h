@@ -16,4 +16,7 @@ void move_bl();
 void handle_wheel_command(char data);
 void speed_change(int value);
 
+extern char current_active_cmd;
+extern unsigned long motion_start_time;
+
 #endif

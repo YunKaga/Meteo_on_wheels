@@ -3,10 +3,12 @@
 #include <Arduino.h>
 #include "sensors.h"
 #include "wheels.h"
+#include "sd.h"
 
-//SoftwareSerial wifiSerial(1, 0);
 #define wifiSerial    Serial1
 
+extern char current_active_cmd;
+extern unsigned long motion_start_time;
 
 static bool save_requested = false;
 
@@ -59,40 +61,51 @@ void wifi_init() {
 }
 
 void wifi_handle_incoming_commands() {
-  static String buffer = "";
-  while (wifiSerial.available()) {
-    char c = wifiSerial.read();
-    Serial.write(c); // эхо для отладки
-    buffer += c;
+    static String buffer = "";
+    while (wifiSerial.available()) {
+        char c = wifiSerial.read();
+        Serial.write(c); // эхо для отладки
+        buffer += c;
 
-    if (c == '\n') {
-      // Ищем начало данных после +IPD,...
-      int colonIndex = buffer.indexOf(':');
-      if (colonIndex != -1 && buffer.startsWith("+IPD,")) {
-        String dataPart = buffer.substring(colonIndex + 1);
-        dataPart.trim(); // убираем \r\n
+        if (c == '\n') {
+            // Ищем начало данных после +IPD,...
+            int colonIndex = buffer.indexOf(':');
+            if (colonIndex != -1 && buffer.startsWith("+IPD,")) {
+                String dataPart = buffer.substring(colonIndex + 1);
+                dataPart.trim(); // убираем \r\n
 
-        if (dataPart.startsWith("CMD:")) {
-          char cmd = dataPart.charAt(4);
-          if (cmd == 'S'){
-            Serial.println("→ Command: " + dataPart.substring(4));
-            speed_change(dataPart.substring(5).toInt());
-          }
-          else {
-            Serial.println("→ Command: " + String(cmd));
-            handle_wheel_command(cmd);
-          }
-        } else if (dataPart == "SAVE_NOW") {
-          save_requested = true;
-          Serial.println("→ Save requested");
+                if (dataPart.startsWith("CMD:")) {
+                    char cmd = dataPart.charAt(4);
+                    if (cmd == 'S'){
+                        Serial.println("→ Command: " + dataPart.substring(4));
+                        speed_change(dataPart.substring(5).toInt());
+                    }
+                    else {
+                        Serial.println("→ Motion command: " + String(cmd));
+                        if (cmd == '0') {
+                            if (current_active_cmd != '0') {
+                                unsigned long duration = millis() - motion_start_time;
+                                sd_log_motion(current_active_cmd, duration);
+                                current_active_cmd = '0';
+                            }
+                            w_off();
+                        } else {
+                            handle_wheel_command(cmd);
+                            current_active_cmd = cmd;
+                            motion_start_time = millis();
+                        }
+                    }
+                }
+                else if (dataPart == "SAVE_NOW") {
+                    save_requested = true;
+                    Serial.println("→ Save requested");
+                }
+            }
+            buffer = "";
         }
-      }
-      buffer = "";
-    }
 
-    // Защита от переполнения
-    if (buffer.length() > 200) buffer = "";
-  }
+        if (buffer.length() > 200) buffer = "";
+    }
 }
 
 void wifi_send_data(double sensors_data[3]) {
