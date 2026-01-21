@@ -39,6 +39,7 @@ def esp_listener():
 def send_to_esp(cmd):
     try:
         with socket.socket() as s:
+            s.settimeout(1.0)
             s.connect((ESP_IP, ESP_PORT))
             s.sendall((cmd + "\n").encode())
             print("Отправлено:", cmd)
